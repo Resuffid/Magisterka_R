@@ -1,0 +1,142 @@
+#Skrypt
+#Biblioteki
+library(tidyverse)
+library(psych)
+library(effsize)
+library(EnvStats)
+library(lme4)
+library(lmerTest)
+library(emmeans)
+library(datasets)
+library(broom)
+library(ggpubr)
+library(rstatix)
+library(gridExtra)
+library(multcompView)
+
+#Upload danych
+dane <- read.csv("3c.csv")
+
+#Odwracamy
+dane_r <- dane %>%
+  mutate(KWS_6R = 6-KWS_6,
+         KWS_14R = 6-KWS_14,
+         ChFQ_1P = ChFQ_1-1,
+         ChFQ_2P = ChFQ_2-1,
+         ChFQ_3P = ChFQ_3-1,
+         ChFQ_4P = ChFQ_4-1,
+         ChFQ_5P = ChFQ_5-1,
+         ChFQ_6P = ChFQ_6-1,
+         ChFQ_7P = ChFQ_7-1,
+         ChFQ_8P = ChFQ_8-1,
+         ChFQ_9P = ChFQ_9-1,
+         ChFQ_10P = ChFQ_10-1,
+         ChFQ_11P = ChFQ_11-1,
+         FRAS_33R = 5-FRAS_33,
+         FRAS_37R = 5-FRAS_37,
+         FRAS_45R = 5-FRAS_45,
+         FRAS_50R = 5-FRAS_50,
+         JiMSz_3R = 2-JiMSz_3,
+         JiMSz_4R = 2-JiMSz_4,
+         JiMSz_14R = 2-JiMSz_14,
+         JiMSz_18R = 2-JiMSz_18,
+         JiMSz_23R = 2-JiMSz_23,
+         JiMSz_28R = 2-JiMSz_28,
+         JiMSz_30R = 2-JiMSz_30,
+         JiMSz_34R = 2-JiMSz_34,
+         JiMSz_36R = 2-JiMSz_36,
+         JiMSz_38R = 2-JiMSz_38,
+         JiMSz_40R = 2-JiMSz_40,
+         JiMSz_44R = 2-JiMSz_44,
+         JiMSz_45R = 2-JiMSz_45,
+         JiMSz_49R = 2-JiMSz_49,
+         JiMSz_57R = 2-JiMSz_57,
+         JiMSz_58R = 2-JiMSz_58,
+         JiMSz_59R = 2-JiMSz_59,
+         JiMSz_61R = 2-JiMSz_61,
+         JiMSz_66R = 2-JiMSz_66,
+         JiMSz_70R = 2-JiMSz_70,
+         JiMSz_72R = 2-JiMSz_72
+         )
+
+#Skale
+df <- dane_r %>%
+  mutate(KWS_SS = KWS_1+KWS_4+KWS_8,
+         KWS_WOD = KWS_2+KWS_5+KWS_9+KWS_13+KWS_16,
+         KWS_JZ = KWS_3+KWS_7+KWS_12+KWS_15,
+         KWS_W = KWS_6R+KWS_11+KWS_14R+KWS_18+KWS_19,
+         KWS_CYN = KWS_10+KWS_17,
+         KWS_OG = KWS_1+KWS_4+KWS_8+KWS_2+KWS_5+KWS_9+KWS_13+KWS_16+KWS_6R+KWS_11+KWS_14R+KWS_18+KWS_19+KWS_10+KWS_17,
+         DASS_D = (DASS_3+DASS_5+DASS_10+DASS_13+DASS_16+DASS_17+DASS_21)*2,
+         DASS_L = (DASS_2+DASS_4+DASS_7+DASS_9+DASS_15+DASS_19+DASS_20)*2,
+         DASS_S = (DASS_1+DASS_6+DASS_8+DASS_11+DASS_12+DASS_14+DASS_18)*2,
+         ChFQ_P = ChFQ_1P+ChFQ_2P+ChFQ_3P+ChFQ_4P+ChFQ_5P+ChFQ_6P+ChFQ_7P,
+         ChFQ_M = ChFQ_8P+ChFQ_9P+ChFQ_10P+ChFQ_11P,
+         KMN_ZEW = KMN_13+KMN_19+KMN_23+KMN_29,
+         KMN_INT = KMN_3+KMN_7+KMN_11+KMN_16+KMN_22+KMN_24+KMN_26,
+         KMN_ID = KMN_2+KMN_5+KMN_10+KMN_14+KMN_18+KMN_25+KMN_27,
+         KMN_WEW = KMN_4+KMN_6+KMN_9+KMN_12+KMN_15+KMN_20+KMN_28,
+         KMN_A = KMN_1+KMN_8+KMN_17+KMN_21+KMN_30,
+         FRAS_FCPS = FRAS_1+FRAS_6+FRAS_7+FRAS_8+FRAS_9+FRAS_10+FRAS_14+FRAS_15+FRAS_16+FRAS_17+FRAS_18+FRAS_20+FRAS_23+FRAS_24+FRAS_25+FRAS_26+FRAS_27+FRAS_28+FRAS_29+FRAS_30+FRAS_40+FRAS_41+FRAS_46+FRAS_48+FRAS_52+FRAS_53+FRAS_54,
+         FRAS_USER = FRAS_11+FRAS_19+FRAS_31+FRAS_32+FRAS_38+FRAS_39+FRAS_43+FRAS_49,
+         FRAS_MPO = FRAS_13+FRAS_21+FRAS_22+FRAS_34+FRAS_36+FRAS_51,
+         FRAS_FC = FRAS_2+FRAS_33R+FRAS_37R+FRAS_45R+FRAS_47+FRAS_50R,
+         FRAS_FS = FRAS_12+FRAS_35+FRAS_42+FRAS_44,
+         FRAS_AMMA = FRAS_3+FRAS_4+FRAS_5,
+         JiMSz_L = JiMSz_2+JiMSz_5+JiMSz_8+JiMSz_11+JiMSz_13+JiMSz_15+JiMSz_17+JiMSz_19+JiMSz_22+JiMSz_24+JiMSz_26+JiMSz_29+JiMSz_31+JiMSz_33+JiMSz_35+JiMSz_37+JiMSz_39+JiMSz_43+JiMSz_46+JiMSz_48+JiMSz_50+JiMSz_53+JiMSz_55+JiMSz_60+JiMSz_62+JiMSz_64+JiMSz_67+JiMSz_69+JiMSz_71+JiMSz_73+JiMSz_57R,
+         JiMSz_M = JiMSz_1+JiMSz_6+JiMSz_7+JiMSz_9+JiMSz_12+JiMSz_16+JiMSz_20+JiMSz_25+JiMSz_27+JiMSz_32+JiMSz_42+JiMSz_47+JiMSz_52+JiMSz_54+JiMSz_56+JiMSz_63+JiMSz_68+JiMSz_3R+JiMSz_14R+JiMSz_18R+JiMSz_23R+JiMSz_30R+JiMSz_34R+JiMSz_38R+JiMSz_40R+JiMSz_44R+JiMSz_49R+JiMSz_58R+JiMSz_61R+JiMSz_70R+JiMSz_72R,
+         JiMSz_K = JiMSz_10+JiMSz_21+JiMSz_51+JiMSz_4R+JiMSz_28R+JiMSz_36R+JiMSz_45R+JiMSz_59R+JiMSz_66R
+         )
+
+#Opisówka
+opisowe <- df %>%
+  summarise(KWS_SS_M = mean(KWS_SS),
+            KWS_SS_SD = sd(KWS_SS),
+            KWS_WOD_M = mean(KWS_WOD),
+            KWS_WOD_SD = sd(KWS_WOD),
+            KWS_JZ_M = mean(KWS_JZ),
+            KWS_JZ_SD = sd(KWS_JZ),
+            KWS_W_M = mean(KWS_W),
+            KWS_W_SD = sd(KWS_W),
+            KWS_CYN_M = mean(KWS_CYN),
+            KWS_CYN_SD = sd(KWS_CYN),
+            KWS_OG_M = mean(KWS_OG),
+            KWS_OG_SD = sd(KWS_OG),
+            DASS_D_M = mean(DASS_D),
+            DASS_D_SD = sd(DASS_D),
+            DASS_L_M = mean(DASS_L),
+            DASS_L_SD = sd(DASS_L),
+            DASS_S_M = mean(DASS_S),
+            DASS_S_SD = sd(DASS_S),
+            ChFQ_P_M = mean(ChFQ_P),
+            ChFQ_P_SD = sd(ChFQ_P),
+            ChFQ_M_M = mean(ChFQ_M),
+            ChFQ_M_SD = sd(ChFQ_M),
+            KMN_ZEW_M = mean(KMN_ZEW),
+            KMN_ZEW_SD = sd(KMN_ZEW),
+            KMN_INT_M = mean(KMN_INT),
+            KMN_INT_SD = sd(KMN_INT),
+            KMN_ID_M = mean(KMN_ID),
+            KMN_ID_SD = sd(KMN_ID),
+            KMN_WEW_M = mean(KMN_WEW),
+            KMN_WEW_SD = sd(KMN_WEW),
+            KMN_A_M = mean(KMN_A),
+            KMN_A_SD = sd(KMN_A),
+            FRAS_FCPS_M = mean(FRAS_FCPS),
+            FRAS_FCPS_SD = sd(FRAS_FCPS),
+            FRAS_USER_M = mean(FRAS_USER),
+            FRAS_USER_SD = sd(FRAS_USER),
+            FRAS_MPO_M = mean(FRAS_MPO),
+            FRAS_MPO_SD = sd(FRAS_MPO),
+            FRAS_FC_M = mean(FRAS_FC),
+            FRAS_FC_SD = sd(FRAS_FC),
+            FRAS_FS_M = mean(FRAS_FS),
+            FRAS_FS_SD = sd(FRAS_FS),
+            FRAS_AMMA_M = mean(FRAS_AMMA),
+            FRAS_AMMA_SD = sd(FRAS_AMMA),
+            JiMSz_L_M = mean(JiMSz_L),
+            JiMSz_L_SD = sd(JiMSz_L),
+            JiMSz_M_M = mean(JiMSz_M),
+            JiMSz_M_SD = sd(JiMSz_M),
+            JiMSz_K_M = mean(JiMSz_K),
+            JiMSz_K_SD = sd(JiMSz_K))
