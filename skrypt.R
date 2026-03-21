@@ -13,9 +13,12 @@ library(ggpubr)
 library(rstatix)
 library(gridExtra)
 library(multcompView)
+library(lavaan)
+library(foreign) 
+library(GPArotation)
 
 #Upload danych
-dane <- read.csv("3c.csv")
+dane <- read.csv("magisterka.csv")
 
 #Odwracamy
 dane_r <- dane %>%
@@ -140,3 +143,190 @@ opisowe <- df %>%
             JiMSz_M_SD = sd(JiMSz_M),
             JiMSz_K_M = mean(JiMSz_K),
             JiMSz_K_SD = sd(JiMSz_K))
+statop_klasa <- df %>%
+  group_by(Class) %>%
+  summarise(N = n(),
+    age = mean(Age),
+    age_SD = SD(Age),
+    KWS_SS_M = mean(KWS_SS),
+    KWS_SS_SD = sd(KWS_SS),
+    KWS_WOD_M = mean(KWS_WOD),
+    KWS_WOD_SD = sd(KWS_WOD),
+    KWS_JZ_M = mean(KWS_JZ),
+    KWS_JZ_SD = sd(KWS_JZ),
+    KWS_W_M = mean(KWS_W),
+    KWS_W_SD = sd(KWS_W),
+    KWS_CYN_M = mean(KWS_CYN),
+    KWS_CYN_SD = sd(KWS_CYN),
+    KWS_OG_M = mean(KWS_OG),
+    KWS_OG_SD = sd(KWS_OG),
+    DASS_D_M = mean(DASS_D),
+    DASS_D_SD = sd(DASS_D),
+    DASS_L_M = mean(DASS_L),
+    DASS_L_SD = sd(DASS_L),
+    DASS_S_M = mean(DASS_S),
+    DASS_S_SD = sd(DASS_S),
+    ChFQ_P_M = mean(ChFQ_P),
+    ChFQ_P_SD = sd(ChFQ_P),
+    ChFQ_M_M = mean(ChFQ_M),
+    ChFQ_M_SD = sd(ChFQ_M),
+    KMN_ZEW_M = mean(KMN_ZEW),
+    KMN_ZEW_SD = sd(KMN_ZEW),
+    KMN_INT_M = mean(KMN_INT),
+    KMN_INT_SD = sd(KMN_INT),
+    KMN_ID_M = mean(KMN_ID),
+    KMN_ID_SD = sd(KMN_ID),
+    KMN_WEW_M = mean(KMN_WEW),
+    KMN_WEW_SD = sd(KMN_WEW),
+    KMN_A_M = mean(KMN_A),
+    KMN_A_SD = sd(KMN_A),
+    FRAS_FCPS_M = mean(FRAS_FCPS),
+    FRAS_FCPS_SD = sd(FRAS_FCPS),
+    FRAS_USER_M = mean(FRAS_USER),
+    FRAS_USER_SD = sd(FRAS_USER),
+    FRAS_MPO_M = mean(FRAS_MPO),
+    FRAS_MPO_SD = sd(FRAS_MPO),
+    FRAS_FC_M = mean(FRAS_FC),
+    FRAS_FC_SD = sd(FRAS_FC),
+    FRAS_FS_M = mean(FRAS_FS),
+    FRAS_FS_SD = sd(FRAS_FS),
+    FRAS_AMMA_M = mean(FRAS_AMMA),
+    FRAS_AMMA_SD = sd(FRAS_AMMA),
+    JiMSz_L_M = mean(JiMSz_L),
+    JiMSz_L_SD = sd(JiMSz_L),
+    JiMSz_M_M = mean(JiMSz_M),
+    JiMSz_M_SD = sd(JiMSz_M),
+    JiMSz_K_M = mean(JiMSz_K),
+    JiMSz_K_SD = sd(JiMSz_K))
+
+statop_living <- df %>%
+  group_by(Living) %>%
+  summarise(N = n(),
+            age = mean(Age),
+            age_SD = SD(Age),
+            KWS_SS_M = mean(KWS_SS),
+            KWS_SS_SD = sd(KWS_SS),
+            KWS_WOD_M = mean(KWS_WOD),
+            KWS_WOD_SD = sd(KWS_WOD),
+            KWS_JZ_M = mean(KWS_JZ),
+            KWS_JZ_SD = sd(KWS_JZ),
+            KWS_W_M = mean(KWS_W),
+            KWS_W_SD = sd(KWS_W),
+            KWS_CYN_M = mean(KWS_CYN),
+            KWS_CYN_SD = sd(KWS_CYN),
+            KWS_OG_M = mean(KWS_OG),
+            KWS_OG_SD = sd(KWS_OG),
+            DASS_D_M = mean(DASS_D),
+            DASS_D_SD = sd(DASS_D),
+            DASS_L_M = mean(DASS_L),
+            DASS_L_SD = sd(DASS_L),
+            DASS_S_M = mean(DASS_S),
+            DASS_S_SD = sd(DASS_S),
+            ChFQ_P_M = mean(ChFQ_P),
+            ChFQ_P_SD = sd(ChFQ_P),
+            ChFQ_M_M = mean(ChFQ_M),
+            ChFQ_M_SD = sd(ChFQ_M),
+            KMN_ZEW_M = mean(KMN_ZEW),
+            KMN_ZEW_SD = sd(KMN_ZEW),
+            KMN_INT_M = mean(KMN_INT),
+            KMN_INT_SD = sd(KMN_INT),
+            KMN_ID_M = mean(KMN_ID),
+            KMN_ID_SD = sd(KMN_ID),
+            KMN_WEW_M = mean(KMN_WEW),
+            KMN_WEW_SD = sd(KMN_WEW),
+            KMN_A_M = mean(KMN_A),
+            KMN_A_SD = sd(KMN_A),
+            FRAS_FCPS_M = mean(FRAS_FCPS),
+            FRAS_FCPS_SD = sd(FRAS_FCPS),
+            FRAS_USER_M = mean(FRAS_USER),
+            FRAS_USER_SD = sd(FRAS_USER),
+            FRAS_MPO_M = mean(FRAS_MPO),
+            FRAS_MPO_SD = sd(FRAS_MPO),
+            FRAS_FC_M = mean(FRAS_FC),
+            FRAS_FC_SD = sd(FRAS_FC),
+            FRAS_FS_M = mean(FRAS_FS),
+            FRAS_FS_SD = sd(FRAS_FS),
+            FRAS_AMMA_M = mean(FRAS_AMMA),
+            FRAS_AMMA_SD = sd(FRAS_AMMA),
+            JiMSz_L_M = mean(JiMSz_L),
+            JiMSz_L_SD = sd(JiMSz_L),
+            JiMSz_M_M = mean(JiMSz_M),
+            JiMSz_M_SD = sd(JiMSz_M),
+            JiMSz_K_M = mean(JiMSz_K),
+            JiMSz_K_SD = sd(JiMSz_K))
+
+statop_school <- df %>%
+  group_by(School) %>%
+  summarise(N = n(),
+            age = mean(Age),
+            age_SD = SD(Age),
+            KWS_SS_M = mean(KWS_SS),
+            KWS_SS_SD = sd(KWS_SS),
+            KWS_WOD_M = mean(KWS_WOD),
+            KWS_WOD_SD = sd(KWS_WOD),
+            KWS_JZ_M = mean(KWS_JZ),
+            KWS_JZ_SD = sd(KWS_JZ),
+            KWS_W_M = mean(KWS_W),
+            KWS_W_SD = sd(KWS_W),
+            KWS_CYN_M = mean(KWS_CYN),
+            KWS_CYN_SD = sd(KWS_CYN),
+            KWS_OG_M = mean(KWS_OG),
+            KWS_OG_SD = sd(KWS_OG),
+            DASS_D_M = mean(DASS_D),
+            DASS_D_SD = sd(DASS_D),
+            DASS_L_M = mean(DASS_L),
+            DASS_L_SD = sd(DASS_L),
+            DASS_S_M = mean(DASS_S),
+            DASS_S_SD = sd(DASS_S),
+            ChFQ_P_M = mean(ChFQ_P),
+            ChFQ_P_SD = sd(ChFQ_P),
+            ChFQ_M_M = mean(ChFQ_M),
+            ChFQ_M_SD = sd(ChFQ_M),
+            KMN_ZEW_M = mean(KMN_ZEW),
+            KMN_ZEW_SD = sd(KMN_ZEW),
+            KMN_INT_M = mean(KMN_INT),
+            KMN_INT_SD = sd(KMN_INT),
+            KMN_ID_M = mean(KMN_ID),
+            KMN_ID_SD = sd(KMN_ID),
+            KMN_WEW_M = mean(KMN_WEW),
+            KMN_WEW_SD = sd(KMN_WEW),
+            KMN_A_M = mean(KMN_A),
+            KMN_A_SD = sd(KMN_A),
+            FRAS_FCPS_M = mean(FRAS_FCPS),
+            FRAS_FCPS_SD = sd(FRAS_FCPS),
+            FRAS_USER_M = mean(FRAS_USER),
+            FRAS_USER_SD = sd(FRAS_USER),
+            FRAS_MPO_M = mean(FRAS_MPO),
+            FRAS_MPO_SD = sd(FRAS_MPO),
+            FRAS_FC_M = mean(FRAS_FC),
+            FRAS_FC_SD = sd(FRAS_FC),
+            FRAS_FS_M = mean(FRAS_FS),
+            FRAS_FS_SD = sd(FRAS_FS),
+            FRAS_AMMA_M = mean(FRAS_AMMA),
+            FRAS_AMMA_SD = sd(FRAS_AMMA),
+            JiMSz_L_M = mean(JiMSz_L),
+            JiMSz_L_SD = sd(JiMSz_L),
+            JiMSz_M_M = mean(JiMSz_M),
+            JiMSz_M_SD = sd(JiMSz_M),
+            JiMSz_K_M = mean(JiMSz_K),
+            JiMSz_K_SD = sd(JiMSz_K))
+
+#CFA
+
+model1 <- 'KWS_SS =~ KWS_1+KWS_4+KWS_8
+         KWS_WOD =~ KWS_2+KWS_5+KWS_9+KWS_13+KWS_16
+         KWS_JZ =~ KWS_3+KWS_7+KWS_12+KWS_15
+         KWS_W =~ KWS_6R+KWS_11+KWS_14R+KWS_18+KWS_19
+         KWS_CYN =~ KWS_10+KWS_17'
+fit <- cfa(model1, data=df)
+
+summary(fit, standardized = TRUE, ci = TRUE, fit.measures=TRUE)
+
+KWS <- df %>%
+  select(KWS_1,KWS_2,KWS_3,KWS_4,KWS_5,KWS_6R,KWS_7,KWS_8,KWS_9,KWS_10,KWS_11,KWS_12,KWS_13,KWS_14R,KWS_15,KWS_16,KWS_17,KWS_18,KWS_19)
+alpha(KWS)
+omega(KWS)
+omega(KWS, nfactors=5)
+efa(KWS, nfactors = 5)
+
+#Wypalenie a miejsce zamieszkania
