@@ -1,3 +1,12 @@
+---
+title: "Wyniki"
+output: html_document
+date: "2026-03-26"
+---
+
+
+
+```{r pressure, echo=FALSE}
 #Skrypt
 #Biblioteki
 library(tidyverse)
@@ -387,4 +396,6 @@ ggplot(data=df2, mapping = aes(x=Living, y=KWS_CYN)) +
   geom_boxplot()+
   geom_jitter(color="magenta")
 
+
+```
 
