@@ -22,8 +22,12 @@ dane <- read.csv("magisterka.csv")
 
 #Odwracamy
 dane_r <- dane %>%
-  mutate(KWS_6R = 6-KWS_6,
+  mutate(KWS_3R=6-KWS_3,
+         KWS_6R = 6-KWS_6,
+         KWS_7R=6-KWS_7,
+         KWS_12R=6-KWS_12,
          KWS_14R = 6-KWS_14,
+         KWS_15R=6-KWS_15,
          ChFQ_1P = ChFQ_1-1,
          ChFQ_2P = ChFQ_2-1,
          ChFQ_3P = ChFQ_3-1,
@@ -66,10 +70,10 @@ dane_r <- dane %>%
 df <- dane_r %>%
   mutate(KWS_SS = KWS_1+KWS_4+KWS_8,
          KWS_WOD = KWS_2+KWS_5+KWS_9+KWS_13+KWS_16,
-         KWS_JZ = KWS_3+KWS_7+KWS_12+KWS_15,
+         KWS_JZ = KWS_3R+KWS_7R+KWS_12R+KWS_15R,
          KWS_W = KWS_6R+KWS_11+KWS_14R+KWS_18+KWS_19,
          KWS_CYN = KWS_10+KWS_17,
-         KWS_OG = KWS_1+KWS_4+KWS_8+KWS_2+KWS_5+KWS_9+KWS_13+KWS_16+KWS_6R+KWS_11+KWS_14R+KWS_18+KWS_19+KWS_10+KWS_17,
+         KWS_OG = KWS_1+KWS_4+KWS_8+KWS_2+KWS_5+KWS_9+KWS_13+KWS_16+KWS_6R+KWS_11+KWS_14R+KWS_18+KWS_19+KWS_10+KWS_17+KWS_3R+KWS_7R+KWS_12R+KWS_15R,
          DASS_D = (DASS_3+DASS_5+DASS_10+DASS_13+DASS_16+DASS_17+DASS_21)*2,
          DASS_L = (DASS_2+DASS_4+DASS_7+DASS_9+DASS_15+DASS_19+DASS_20)*2,
          DASS_S = (DASS_1+DASS_6+DASS_8+DASS_11+DASS_12+DASS_14+DASS_18)*2,
@@ -92,6 +96,16 @@ df <- dane_r %>%
          )
 
 #Opisówka
+opis <- df%>%
+  summarise(N=n(),
+            M=mean(Age),
+            SD=sd(Age))
+plec <- df%>%
+  group_by(Gender)%>%
+  summarise(N=n(),
+            M=mean(Age),
+            SD=sd(Age))
+            
 opisowe <- df %>%
   summarise(KWS_SS_M = mean(KWS_SS),
             KWS_SS_SD = sd(KWS_SS),
@@ -313,21 +327,26 @@ statop_school <- df %>%
 
 #CFA
 
-model1 <- 'KWS_SS =~ KWS_1+KWS_4+KWS_8
-         KWS_WOD =~ KWS_2+KWS_5+KWS_9+KWS_13+KWS_16
-         KWS_JZ =~ KWS_3+KWS_7+KWS_12+KWS_15
-         KWS_W =~ KWS_6R+KWS_11+KWS_14R+KWS_18+KWS_19
-         KWS_CYN =~ KWS_10+KWS_17'
-fit <- cfa(model1, data=df)
+model1 <-
+         '
+         KWS_WOD =~ KWS_2+KWS_5+KWS_13+KWS_9+KWS_16+KWS_1+KWS_4+KWS_8
+         KWS_JZ =~ KWS_3R+KWS_7R+KWS_12R+KWS_15R
+         KWS_W =~ KWS_11+KWS_18+KWS_19
+        KWS_OG =~ KWS_WOD+KWS_JZ+KWS_W
+         '
+fit <- cfa(model1, data=df, estimator = "WLSMV")
 
 summary(fit, standardized = TRUE, ci = TRUE, fit.measures=TRUE)
 
 KWS <- df %>%
-  select(KWS_1,KWS_2,KWS_3,KWS_4,KWS_5,KWS_6R,KWS_7,KWS_8,KWS_9,KWS_10,KWS_11,KWS_12,KWS_13,KWS_14R,KWS_15,KWS_16,KWS_17,KWS_18,KWS_19)
+  select(KWS_1,KWS_2,KWS_3R,KWS_4,KWS_5,KWS_7R,KWS_8,KWS_11,KWS_12R,KWS_13,KWS_15R,KWS_16,KWS_18,KWS_19)
 alpha(KWS)
+cynism <- df%>%
+  select(KWS_10, KWS_17)
+alpha(cynism)
 omega(KWS)
-omega(KWS, nfactors=5)
-efa(KWS, nfactors = 5)
+omega(KWS, nfactors=3)
+ efa(KWS, nfactors = 4)
 
 #Wypalenie a miejsce zamieszkania
 df2 <- df %>%
