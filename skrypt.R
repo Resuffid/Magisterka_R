@@ -95,6 +95,8 @@ df <- dane_r %>%
          JiMSz_K = JiMSz_10+JiMSz_21+JiMSz_51+JiMSz_4R+JiMSz_28R+JiMSz_36R+JiMSz_45R+JiMSz_59R+JiMSz_66R
          )
 
+write.csv(df, "df.csv")
+
 #Opisówka
 opis <- df%>%
   summarise(N=n(),
@@ -407,3 +409,8 @@ ggplot(data=df2, mapping = aes(x=Living, y=KWS_CYN)) +
   geom_jitter(color="magenta")
 
 
+shapiro.test(df$KWS_OG)
+shapiro.test(df$DASS_D)
+shapiro.test(df$DASS_L)
+shapiro.test(df$DASS_S)
+shapiro.test(df$KWS_OG)
