@@ -14,6 +14,7 @@ library(multcompView)
 library(lavaan)
 library(foreign) 
 library(GPArotation)
+library(car)
 
 df3 <- read.csv("df3.csv")
 
@@ -232,7 +233,7 @@ KWS_GAOV <- aov(KWS_G ~ Living, data = df4)
 KWS_GAOV
 summary(KWS_GAOV)
 TukeyHSD(KWS_GAOV)
-ggplot(data=df4, mapping = aes(x=Living, y=KWS_G)) +
+KWS1 <- ggplot(data=df4, mapping = aes(x=Living, y=KWS_G)) +
   geom_boxplot()+
   labs(x="Place of Living", y="KWS G")
 eta_squared(KWS_GAOV)
@@ -241,7 +242,7 @@ KWS_EESAOV <- aov(KWS_EES ~ Living, data = df4)
 KWS_EESAOV
 summary(KWS_EESAOV)
 TukeyHSD(KWS_EESAOV)
-ggplot(data=df4, mapping = aes(x=Living, y=KWS_EES)) +
+KWS2 <- ggplot(data=df4, mapping = aes(x=Living, y=KWS_EES)) +
   geom_boxplot()+
   labs(x="Place of Living", y="KWS EES")
 eta_squared(KWS_EESAOV)
@@ -254,11 +255,11 @@ KWS_QoLAOV <- aov(KWS_QoL ~ Living, data = df4)
 KWS_QoLAOV
 summary(KWS_QoLAOV)
 TukeyHSD(KWS_QoLAOV)
-ggplot(data=df4, mapping = aes(x=Living, y=KWS_QoL)) +
+KWS3 <- ggplot(data=df4, mapping = aes(x=Living, y=KWS_QoL)) +
   geom_boxplot()+
   labs(x="Place of Living", y="KWS QoL")
 eta_squared(KWS_QoLAOV)
-
+combined_KWS <- grid.arrange(KWS1, KWS2, KWS3, ncol=3)
 
 FRAS_FCPSAOV <- aov(FRAS_FCPS ~ Living, data = df4)
 FRAS_FCPSAOV
@@ -276,14 +277,16 @@ TukeyHSD(FRAS_FCPSAOV)
 ggplot(data=df4, mapping = aes(x=Living, y=FRAS_FCPS)) +
   geom_boxplot()+
   labs(x="Place of Living", y="FRAS FCPS")
+eta_squared(FRAS_FCPSAOV)
 
 FRAS_USERAOV <- aov(FRAS_USER ~ Living, data = df4)
 FRAS_USERAOV
 summary(FRAS_USERAOV)
 TukeyHSD(FRAS_USERAOV)
-ggplot(data=df4, mapping = aes(x=Living, y=FRAS_USER)) +
+FRAS1 <- ggplot(data=df4, mapping = aes(x=Living, y=FRAS_USER)) +
   geom_boxplot()+
   labs(x="Place of Living", y="FRAS USER")
+eta_squared(FRAS_USERAOV)
 
 FRAS_MPOAOV <- aov(FRAS_MPO ~ Living, data = df4)
 FRAS_MPOAOV
@@ -292,6 +295,7 @@ TukeyHSD(FRAS_MPOAOV)
 ggplot(data=df4, mapping = aes(x=Living, y=FRAS_MPO)) +
   geom_boxplot()+
   labs(x="Place of Living", y="FRAS MPO")
+eta_squared(FRAS_MPOAOV)
 
 FRAS_FCAOV <- aov(FRAS_FC ~ Living, data = df4)
 FRAS_FCAOV
@@ -300,6 +304,7 @@ TukeyHSD(FRAS_FCAOV)
 ggplot(data=df4, mapping = aes(x=Living, y=FRAS_FC)) +
   geom_boxplot()+
   labs(x="Place of Living", y="FRAS FC")
+eta_squared(FRAS_FCAOV)
 
 FRAS_FSAOV <- aov(FRAS_FS ~ Living, data = df4)
 FRAS_FSAOV
@@ -308,6 +313,7 @@ TukeyHSD(FRAS_FSAOV)
 ggplot(data=df4, mapping = aes(x=Living, y=FRAS_FS)) +
   geom_boxplot()+
   labs(x="Place of Living", y="FRAS FS")
+eta_squared(FRAS_FSAOV)
 
 FRAS_AMMAAOV <- aov(FRAS_AMMA ~ Living, data = df4)
 FRAS_AMMAAOV
@@ -316,14 +322,18 @@ TukeyHSD(FRAS_AMMAAOV)
 ggplot(data=df4, mapping = aes(x=Living, y=FRAS_AMMA)) +
   geom_boxplot()+
   labs(x="Place of Living", y="FRAS AMMA")
+eta_squared(FRAS_AMMAAOV)
 
 FRAS_ALLAOV <- aov(FRAS_ALL ~ Living, data = df4)
 FRAS_ALLAOV
 summary(FRAS_ALLAOV)
 TukeyHSD(FRAS_ALLAOV)
-ggplot(data=df4, mapping = aes(x=Living, y=FRAS_ALL)) +
+FRAS2 <- ggplot(data=df4, mapping = aes(x=Living, y=FRAS_ALL)) +
   geom_boxplot()+
   labs(x="Place of Living", y="FRAS ALL")
+eta_squared(FRAS_ALLAOV)
+
+grid.arrange(FRAS1, FRAS2, ncol=2)
 
 JiMSLAOV <- aov(JiMSz_L ~ Living, data = df4)
 JiMSLAOV
@@ -332,6 +342,7 @@ TukeyHSD(JiMSLAOV)
 ggplot(data=df4, mapping = aes(x=Living, y=JiMSz_L)) +
   geom_boxplot()+
   labs(x="Place of Living", y="JiMSz A")
+eta_squared((JiMSLAOV))
 
 JiMSMAOV <- aov(JiMSz_M ~ Living, data = df4)
 JiMSMAOV
@@ -348,3 +359,35 @@ TukeyHSD(JiMSKAOV)
 ggplot(data=df4, mapping = aes(x=Living, y=JiMSz_K)) +
   geom_boxplot()+
   labs(x="Place of Living", y="JiMSz L")
+eta_squared(JiMSKAOV)
+
+#H3
+cor_mat(KWS_G, KWS_EES, KWS_A, KWS_QoL, FRAS_ALL, FRAS_FCPS, FRAS_USER, FRAS_MPO, FRAS_FC, FRAS_FS, FRAS_AMMA, data=df4)
+cor_pmat(KWS_G, KWS_EES, KWS_A, KWS_QoL, FRAS_ALL, FRAS_FCPS, FRAS_USER, FRAS_MPO, FRAS_FC, FRAS_FS, FRAS_AMMA, data=df4)
+
+model_KWSG <- lm(KWS_G ~ FRAS_FCPS+FRAS_USER+FRAS_MPO+FRAS_FC+FRAS_FS+FRAS_AMMA, data = df4)
+summary(model_KWSG)
+plot(model_KWSG)
+sigma(model_KWSG)
+vif(model_KWSG)
+avPlots(model_KWSG)
+
+model_KWSEES <- lm(KWS_EES ~ FRAS_FCPS+FRAS_USER+FRAS_MPO+FRAS_FC+FRAS_FS+FRAS_AMMA, data = df4)
+summary(model_KWSEES)
+plot(model_KWSEES)
+sigma(model_KWSEES)
+vif(model_KWSEES)
+
+model_KWSA <- lm(KWS_A ~ FRAS_FCPS+FRAS_USER+FRAS_MPO+FRAS_FC+FRAS_FS+FRAS_AMMA, data = df4)
+summary(model_KWSA)
+plot(model_KWSA)
+sigma(model_KWSA)
+vif(model_KWSA)
+
+model_KWSQoL <- lm(KWS_QoL ~ FRAS_FCPS+FRAS_USER+FRAS_MPO+FRAS_FC+FRAS_FS+FRAS_AMMA, data = df4)
+summary(model_KWSQoL)
+plot(model_KWSQoL)
+sigma(model_KWSQoL)
+vif(model_KWSQoL)
+
+summary(lm(KWS_G~FRAS_ALL, data=df4))
